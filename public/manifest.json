@@ -1,0 +1,19 @@
+{
+  "name": "Ravel",
+  "short_name": "Ravel",
+  "description": "Curate your style. Save, organize, and share your favorite fashion finds.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "/core.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "shopping"],
+  "orientation": "portrait-primary"
+}
