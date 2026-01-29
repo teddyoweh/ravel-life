@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 // API base URL
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://ravel-api-152773804593.us-central1.run.app";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://ravel-api.dev.spawnlabs.run";
 
 interface CollectionItem {
   id: string;
