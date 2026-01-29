@@ -1,11 +1,10 @@
 import { ImageResponse } from "next/og";
+import { API_BASE } from "@/lib/api";
 
 export const runtime = "edge";
 export const alt = "Collection Preview";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://ravel-api.dev.spawnlabs.run";
 
 interface CollectionItem {
   id: string;

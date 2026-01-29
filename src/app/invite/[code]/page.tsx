@@ -1,8 +1,7 @@
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://ravel-api.dev.spawnlabs.run";
+import { API_BASE } from "@/lib/api";
 
 interface InviteInfo {
   invite_code: string;

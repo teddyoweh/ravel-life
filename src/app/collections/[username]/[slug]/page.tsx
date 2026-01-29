@@ -2,9 +2,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
-// API base URL
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://ravel-api.dev.spawnlabs.run";
+import { API_BASE } from "@/lib/api";
 
 interface CollectionItem {
   id: string;
