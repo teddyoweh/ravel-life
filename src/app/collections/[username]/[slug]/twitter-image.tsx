@@ -34,18 +34,6 @@ async function getCollection(username: string, slug: string): Promise<Collection
   }
 }
 
-// Positions for scattered images around edges (x%, y%, rotation, scale)
-const imagePositions = [
-  { x: 2, y: 5, rotate: -12, scale: 0.9 },
-  { x: 78, y: 3, rotate: 8, scale: 0.85 },
-  { x: -3, y: 55, rotate: -8, scale: 0.95 },
-  { x: 80, y: 50, rotate: 15, scale: 0.88 },
-  { x: 5, y: 78, rotate: 6, scale: 0.82 },
-  { x: 75, y: 75, rotate: -10, scale: 0.9 },
-  { x: 35, y: -5, rotate: 3, scale: 0.75 },
-  { x: 40, y: 82, rotate: -5, scale: 0.78 },
-];
-
 export default async function Image({
   params,
 }: {
@@ -64,35 +52,32 @@ export default async function Image({
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "#0a0a0a",
-            fontFamily: "system-ui, -apple-system, sans-serif",
+            background: "#fafafa",
+            fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 16,
-            }}
-          >
-            <span style={{ fontSize: 48, color: "#fff", fontWeight: 600 }}>
-              Ravel
-            </span>
-            <span style={{ fontSize: 24, color: "#666" }}>
-              Collection not found
-            </span>
-          </div>
+          <span style={{ fontSize: 48, color: "#1d1d1f", fontWeight: 600 }}>
+            Collection not found
+          </span>
         </div>
       ),
       { ...size }
     );
   }
 
-  const { collection, items } = data;
+  const { items } = data;
   const productImages = items
     .filter((item) => item.product_image_url)
-    .slice(0, 8);
+    .slice(0, 5);
+
+  // Card positions - dramatic fan spread
+  const cardPositions = [
+    { rotate: -30, zIndex: 1 },
+    { rotate: -15, zIndex: 2 },
+    { rotate: 0, zIndex: 3 },
+    { rotate: 15, zIndex: 4 },
+    { rotate: 30, zIndex: 5 },
+  ];
 
   return new ImageResponse(
     (
@@ -102,214 +87,132 @@ export default async function Image({
           height: "100%",
           display: "flex",
           position: "relative",
-          backgroundColor: "#fafafa",
-          fontFamily: "system-ui, -apple-system, sans-serif",
+          background: "#fafafa",
+          fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
           overflow: "hidden",
         }}
       >
-        {/* Subtle gradient background */}
+        {/* Subtle background gradient */}
         <div
           style={{
             position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "linear-gradient(135deg, #f5f5f5 0%, #ffffff 50%, #f0f0f0 100%)",
+            inset: 0,
+            background: "linear-gradient(145deg, #ffffff 0%, #f5f5f7 50%, #ebebed 100%)",
+          }}
+        />
+        
+        {/* Ambient light glow behind cards */}
+        <div
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "45%",
+            transform: "translate(-50%, -50%)",
+            width: 700,
+            height: 700,
+            background: "radial-gradient(circle, rgba(0,0,0,0.04) 0%, transparent 70%)",
+            borderRadius: "50%",
           }}
         />
 
-        {/* Scattered product images around edges */}
-        {productImages.map((item, index) => {
-          const pos = imagePositions[index];
-          if (!pos || !item.product_image_url) return null;
-          
-          const imgSize = 160 * pos.scale;
-          
-          return (
-            <div
-              key={item.id}
-              style={{
-                position: "absolute",
-                left: `${pos.x}%`,
-                top: `${pos.y}%`,
-                width: imgSize,
-                height: imgSize,
-                borderRadius: 16,
-                overflow: "hidden",
-                transform: `rotate(${pos.rotate}deg)`,
-                boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-                border: "3px solid white",
-                display: "flex",
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={item.product_image_url}
-                alt=""
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-              />
-            </div>
-          );
-        })}
-
-        {/* Center content */}
+        {/* Centered fanned cards */}
         <div
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
             display: "flex",
-            flexDirection: "column",
+            width: "100%",
+            height: "100%",
             alignItems: "center",
             justifyContent: "center",
-            padding: 60,
+            paddingBottom: 40,
           }}
         >
-          {/* Glass card for text */}
           <div
             style={{
               display: "flex",
-              flexDirection: "column",
+              position: "relative",
+              width: 800,
+              height: 500,
               alignItems: "center",
               justifyContent: "center",
-              padding: "48px 80px",
-              borderRadius: 32,
-              background: "rgba(255, 255, 255, 0.85)",
-              boxShadow: "0 4px 60px rgba(0,0,0,0.08)",
-              border: "1px solid rgba(0,0,0,0.05)",
             }}
           >
-            {/* Collection name */}
-            <span
-              style={{
-                fontSize: 64,
-                fontWeight: 700,
-                color: "#1a1a1a",
-                textAlign: "center",
-                lineHeight: 1.1,
-                maxWidth: 700,
-                letterSpacing: "-0.02em",
-              }}
-            >
-              {collection.name}
-            </span>
-
-            {/* Divider */}
-            <div
-              style={{
-                width: 60,
-                height: 3,
-                backgroundColor: "#e0e0e0",
-                borderRadius: 2,
-                marginTop: 28,
-                marginBottom: 28,
-              }}
-            />
-
-            {/* Owner and stats */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 16,
-              }}
-            >
-              {/* Owner avatar */}
-              {collection.owner_avatar_url ? (
+            {productImages.map((item, index) => {
+              const pos = cardPositions[index];
+              if (!pos || !item.product_image_url) return null;
+              
+              // Cards fan from bottom center pivot
+              const translateX = Math.sin((pos.rotate * Math.PI) / 180) * 350;
+              
+              return (
                 <div
+                  key={item.id}
                   style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 20,
+                    position: "absolute",
+                    width: 280,
+                    height: 370,
+                    borderRadius: 28,
                     overflow: "hidden",
+                    transform: `translateX(${translateX}px) rotate(${pos.rotate}deg)`,
+                    transformOrigin: "center bottom",
+                    boxShadow: `
+                      0 2px 4px rgba(0,0,0,0.04),
+                      0 8px 16px rgba(0,0,0,0.08),
+                      0 24px 48px rgba(0,0,0,0.12)
+                    `,
                     display: "flex",
+                    zIndex: pos.zIndex,
+                    border: "1px solid rgba(255,255,255,0.5)",
                   }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={collection.owner_avatar_url}
+                    src={item.product_image_url}
                     alt=""
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                  {/* Subtle top highlight */}
+                  <div
                     style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: 80,
+                      background: "linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%)",
                     }}
                   />
                 </div>
-              ) : (
-                <div
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 20,
-                    backgroundColor: "#e5e5e5",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <span style={{ fontSize: 18, fontWeight: 600, color: "#666" }}>
-                    {collection.owner_name.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-              )}
-              
-              <span
-                style={{
-                  fontSize: 24,
-                  color: "#666",
-                  fontWeight: 500,
-                }}
-              >
-                {collection.owner_name}
-              </span>
-              
-              <span style={{ fontSize: 24, color: "#ccc" }}>•</span>
-              
-              <span
-                style={{
-                  fontSize: 24,
-                  color: "#666",
-                  fontWeight: 500,
-                }}
-              >
-                {collection.item_count} items
-              </span>
-            </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* Ravel branding */}
+        {/* Bottom branding bar */}
         <div
           style={{
             position: "absolute",
-            bottom: 24,
-            right: 32,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 56,
             display: "flex",
             alignItems: "center",
-            gap: 10,
-            padding: "10px 20px",
-            borderRadius: 24,
-            backgroundColor: "rgba(255,255,255,0.9)",
+            justifyContent: "flex-end",
+            paddingRight: 40,
+            background: "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.02) 100%)",
           }}
         >
-          <span
-            style={{
-              fontSize: 22,
-              fontWeight: 600,
-              color: "#1a1a1a",
-              letterSpacing: "-0.01em",
-            }}
-          >
-            ravel.life
-          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://ravel.life/core.png"
+              alt=""
+              style={{ width: 28, height: 28, borderRadius: 7 }}
+            />
+            <span style={{ fontSize: 17, fontWeight: 600, color: "#1d1d1f", letterSpacing: "-0.01em" }}>
+              Ravel
+            </span>
+          </div>
         </div>
       </div>
     ),

@@ -31,6 +31,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "**.acbuy.com",
       },
+      {
+        protocol: "https",
+        hostname: "**.t3.storage.dev",
+      },
     ],
   },
 };
