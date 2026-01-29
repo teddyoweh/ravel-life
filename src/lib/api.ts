@@ -4,11 +4,17 @@
  * Central place for API URL and common fetch utilities.
  */
 
-// API Base URL - reads from environment variable with fallback
-export const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://ravel-api.dev.spawnlabs.run";
+/// Production API URL - Cloud Run deployment
+const PRODUCTION_URL = "https://ravel-api-152773804593.us-central1.run.app";
 
-// Production URL (for reference)
-// export const API_BASE_PROD = "https://ravel-api-152773804593.us-central1.run.app";
+/// Local dev URL - uses Cloudflare tunnel for local development
+const LOCAL_URL = "https://ravel-api.dev.spawnlabs.run";
+
+/// Whether to use local server (set to true for local development)
+const USE_LOCAL_SERVER = false;
+
+// API Base URL - toggle above or override with env var
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL || (USE_LOCAL_SERVER ? LOCAL_URL : PRODUCTION_URL);
 
 /**
  * Fetch JSON from API with error handling
