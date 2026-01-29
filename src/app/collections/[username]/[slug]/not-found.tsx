@@ -1,56 +1,60 @@
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 
-export default function NotFound() {
+export default function CollectionNotFound() {
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0a0a0a]">
+    <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-neutral-100 dark:border-neutral-900">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/core.png"
-              alt="Ravel"
-              width={28}
-              height={28}
-              className="rounded-lg"
-            />
-            <span className="font-semibold text-lg tracking-tight text-neutral-900 dark:text-white">
-              Ravel
-            </span>
-          </Link>
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-2xl backdrop-saturate-150">
+        <div className="max-w-[980px] mx-auto px-6">
+          <div className="h-12 flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-2.5">
+              <Image
+                src="/core.png"
+                alt="Ravel"
+                width={24}
+                height={24}
+                className="rounded-[6px]"
+              />
+              <span className="text-[15px] font-medium text-[#1d1d1f] tracking-[-0.01em]">
+                Ravel
+              </span>
+            </Link>
+          </div>
         </div>
+        <div className="h-px bg-[#d2d2d7]/60" />
       </nav>
 
       {/* Content */}
-      <main className="pt-16 min-h-screen flex items-center justify-center px-6">
-        <div className="text-center max-w-md">
-          <div className="w-24 h-24 mx-auto mb-8 rounded-3xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
-            <svg className="w-12 h-12 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+      <main className="pt-12 min-h-screen flex items-center justify-center px-6">
+        <div className="text-center max-w-[400px]">
+          <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#f5f5f7] flex items-center justify-center">
+            <svg className="w-8 h-8 text-[#86868b]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
             </svg>
           </div>
-          
-          <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-4">
+
+          <h1 className="text-[28px] leading-[1.14] font-semibold text-[#1d1d1f] mb-3">
             Collection not found
           </h1>
           
-          <p className="text-lg text-neutral-600 dark:text-neutral-400 mb-8">
-            This collection doesn&apos;t exist, is private, or has been removed.
+          <p className="text-[17px] leading-[1.47] text-[#86868b] mb-8">
+            This collection may be private or no longer exists.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/"
-              className="flex items-center justify-center gap-2 h-12 px-6 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-medium transition-all hover:scale-[1.02]"
+              className="inline-flex items-center justify-center h-[44px] px-[22px] rounded-full bg-[#0071e3] text-white text-[17px] font-normal transition-all hover:bg-[#0077ed]"
             >
-              Go to Ravel
+              Go Home
             </Link>
+            
             <a
               href="https://apps.apple.com/app/ravel"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 h-12 px-6 rounded-full border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 font-medium transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-900"
+              className="text-[17px] text-[#0066cc] hover:underline"
             >
               Download App
             </a>
