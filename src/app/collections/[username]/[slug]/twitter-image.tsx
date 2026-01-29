@@ -5,7 +5,7 @@ export const alt = "Collection Preview";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://ravel-api-152773804593.us-central1.run.app";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://ravel-api.dev.spawnlabs.run";
 
 interface CollectionItem {
   id: string;
