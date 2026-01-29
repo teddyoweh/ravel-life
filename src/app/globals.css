@@ -8,16 +8,6 @@
   --accent: #0a0a0a;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #fafafa;
-    --muted: #a3a3a3;
-    --border: #262626;
-    --accent: #fafafa;
-  }
-}
-
 * {
   box-sizing: border-box;
   padding: 0;
@@ -50,11 +40,5 @@ html {
 
 /* Selection styling */
 ::selection {
-  background: rgba(0, 0, 0, 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-  ::selection {
-    background: rgba(255, 255, 255, 0.1);
-  }
+  background: rgba(0, 0, 0, 0.08);
 }
