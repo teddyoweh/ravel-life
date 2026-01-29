@@ -5,14 +5,15 @@ import "./globals.css";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Ravel - Curate Your Style",
+  title: "Ravel — Curate Your Style",
   description: "Save, organize, and share your favorite fashion finds. Build collections of items you love.",
   metadataBase: new URL("https://ravel.life"),
   openGraph: {
-    title: "Ravel - Curate Your Style",
+    title: "Ravel — Curate Your Style",
     description: "Save, organize, and share your favorite fashion finds.",
     url: "https://ravel.life",
     siteName: "Ravel",
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Ravel - Curate Your Style",
+        alt: "Ravel",
       },
     ],
     locale: "en_US",
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ravel - Curate Your Style",
+    title: "Ravel — Curate Your Style",
     description: "Save, organize, and share your favorite fashion finds.",
     images: ["/og-image.png"],
   },
@@ -45,8 +46,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased`}>
+    <html lang="en" className="light" style={{ colorScheme: "light" }}>
+      <body className={`${inter.variable} font-sans antialiased bg-white text-[#1d1d1f]`}>
         {children}
       </body>
     </html>

@@ -2,10 +2,10 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #0a0a0a;
-  --muted: #737373;
-  --border: #e5e5e5;
-  --accent: #0a0a0a;
+  --foreground: #1d1d1f;
+  --muted: #86868b;
+  --border: #d2d2d7;
+  --surface: #fbfbfd;
 }
 
 * {
@@ -18,14 +18,16 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  color-scheme: light;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -33,12 +35,17 @@ a {
   text-decoration: none;
 }
 
-/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Selection styling */
 ::selection {
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(0, 125, 250, 0.15);
+}
+
+/* Force light mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: light;
+  }
 }

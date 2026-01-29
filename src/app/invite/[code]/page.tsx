@@ -2,15 +2,58 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "You're Invited - Ravel",
-  description: "Someone wants to share their collection with you on Ravel",
-  openGraph: {
-    title: "You're Invited to Ravel",
-    description: "Someone wants to share their style collection with you",
-    images: ["/og-image.png"],
-  },
-};
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://ravel-api-152773804593.us-central1.run.app";
+
+interface InviteInfo {
+  invite_code: string;
+  inviter_name: string;
+  inviter_avatar_url: string | null;
+  collection_name: string | null;
+  is_valid: boolean;
+}
+
+async function getInviteInfo(code: string): Promise<InviteInfo | null> {
+  try {
+    const res = await fetch(`${API_BASE}/stylists/invite/${code}/info`, {
+      next: { revalidate: 60 },
+    });
+    
+    if (!res.ok) {
+      return null;
+    }
+    
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ code: string }>;
+}): Promise<Metadata> {
+  const { code } = await params;
+  const info = await getInviteInfo(code);
+  
+  const title = info 
+    ? `${info.inviter_name} invited you to Ravel`
+    : "You're Invited - Ravel";
+  
+  const description = info?.collection_name
+    ? `${info.inviter_name} wants to share "${info.collection_name}" with you on Ravel`
+    : `${info?.inviter_name || "Someone"} wants to share their collection with you on Ravel`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: ["/og-image.png"],
+    },
+  };
+}
 
 export default async function InvitePage({
   params,
@@ -18,6 +61,7 @@ export default async function InvitePage({
   params: Promise<{ code: string }>;
 }) {
   const { code } = await params;
+  const info = await getInviteInfo(code);
   
   // Deep link URL for the app
   const appDeepLink = `ravel://invite/${code}`;
@@ -44,20 +88,67 @@ export default async function InvitePage({
       {/* Invite Content */}
       <main className="pt-16 min-h-screen flex items-center justify-center px-6">
         <div className="text-center max-w-md">
-          {/* Icon */}
-          <div className="w-24 h-24 mx-auto mb-8 rounded-3xl bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900 flex items-center justify-center shadow-xl">
-            <svg className="w-12 h-12 text-neutral-600 dark:text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-            </svg>
-          </div>
+          {/* Inviter Avatar */}
+          {info ? (
+            <div className="mb-8">
+              {info.inviter_avatar_url ? (
+                <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border-4 border-neutral-100 dark:border-neutral-800 shadow-xl">
+                  <Image
+                    src={info.inviter_avatar_url}
+                    alt={info.inviter_name}
+                    width={96}
+                    height={96}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-neutral-200 to-neutral-300 dark:from-neutral-700 dark:to-neutral-800 flex items-center justify-center shadow-xl">
+                  <span className="text-3xl font-semibold text-neutral-600 dark:text-neutral-300">
+                    {info.inviter_name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="w-24 h-24 mx-auto mb-8 rounded-3xl bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-900 flex items-center justify-center shadow-xl">
+              <svg className="w-12 h-12 text-neutral-600 dark:text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+              </svg>
+            </div>
+          )}
 
+          {/* Title */}
           <h1 className="text-3xl sm:text-4xl font-semibold text-neutral-900 dark:text-white mb-4">
-            You&apos;re invited!
+            {info ? (
+              <>
+                <span className="text-neutral-500 dark:text-neutral-400 font-normal">
+                  {info.inviter_name}
+                </span>
+                <br />
+                invited you
+              </>
+            ) : (
+              "You're invited!"
+            )}
           </h1>
           
+          {/* Description */}
           <p className="text-lg text-neutral-600 dark:text-neutral-400 mb-8">
-            Someone wants to share their collection with you on Ravel. Open the app to accept.
+            {info?.collection_name ? (
+              <>to view their collection <span className="font-medium text-neutral-900 dark:text-white">&ldquo;{info.collection_name}&rdquo;</span> on Ravel</>
+            ) : (
+              "to share their style collection with you on Ravel"
+            )}
           </p>
+
+          {/* Invalid invite warning */}
+          {info && !info.is_valid && (
+            <div className="mb-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+              <p className="text-sm text-amber-800 dark:text-amber-200">
+                This invite has expired or been used
+              </p>
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex flex-col gap-4">
