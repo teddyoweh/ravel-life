@@ -13,8 +13,54 @@ const marqueeWords = [
 ];
 
 export default function Home() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://ravel.life/#organization",
+        name: "Ravel",
+        url: "https://ravel.life",
+        logo: {
+          "@type": "ImageObject",
+          url: "https://ravel.life/core.png",
+          width: 512,
+          height: 512,
+        },
+        sameAs: ["https://twitter.com/ravelapp"],
+        description:
+          "Save, organize, and share your favorite fashion finds. Build collections of items you love and discover new styles.",
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://ravel.life/#website",
+        url: "https://ravel.life",
+        name: "Ravel",
+        publisher: { "@id": "https://ravel.life/#organization" },
+        inLanguage: "en-US",
+      },
+      {
+        "@type": "MobileApplication",
+        name: "Ravel",
+        operatingSystem: "iOS",
+        applicationCategory: "LifestyleApplication",
+        url: "https://apps.apple.com/app/ravel",
+        downloadUrl: "https://apps.apple.com/app/ravel",
+        offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+        description:
+          "Curate your style. Save pieces you love, build collections, and share your aesthetic with the world.",
+        screenshot: "https://ravel.life/core.png",
+      },
+    ],
+  };
+
   return (
-    <div className="min-h-screen bg-white">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="min-h-screen bg-white">
       {/* ═══════════════════════════════════════════════════════════ */}
       {/*  NAVIGATION                                               */}
       {/* ═══════════════════════════════════════════════════════════ */}
@@ -422,5 +468,6 @@ export default function Home() {
         </div>
       </footer>
     </div>
+    </>
   );
 }

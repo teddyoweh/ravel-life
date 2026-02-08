@@ -6,10 +6,26 @@ export const metadata: Metadata = {
   title: "Terms of Service",
   description:
     "Terms of Service for Ravel - the fashion styling and shopping app.",
+  alternates: { canonical: "https://ravel.life/terms" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
   openGraph: {
     title: "Terms of Service | Ravel",
     description:
       "Terms of Service for Ravel - the fashion styling and shopping app.",
+    url: "https://ravel.life/terms",
+    siteName: "Ravel",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Terms of Service | Ravel",
+    description:
+      "Terms of Service for Ravel - the fashion styling and shopping app.",
+    site: "@ravelapp",
   },
 };
 

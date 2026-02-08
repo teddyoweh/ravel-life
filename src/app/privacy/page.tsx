@@ -6,10 +6,26 @@ export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
     "Learn how Ravel collects, uses, and protects your personal information.",
+  alternates: { canonical: "https://ravel.life/privacy" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
   openGraph: {
     title: "Privacy Policy | Ravel",
     description:
       "Learn how Ravel collects, uses, and protects your personal information.",
+    url: "https://ravel.life/privacy",
+    siteName: "Ravel",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Privacy Policy | Ravel",
+    description:
+      "Learn how Ravel collects, uses, and protects your personal information.",
+    site: "@ravelapp",
   },
 };
 

@@ -64,17 +64,41 @@ export async function generateMetadata({
   return {
     title: `${title} | Ravel`,
     description,
+    keywords: [
+      user.display_name,
+      user.username,
+      "fashion collections",
+      "curated style",
+      "fashion inspiration",
+      "Ravel",
+    ],
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large" as const,
+        "max-snippet": -1,
+      },
+    },
     openGraph: {
       title,
       description,
       url: canonicalUrl,
       siteName: "Ravel",
       type: "profile",
+      ...(user.avatar_url && {
+        images: [{ url: user.avatar_url, width: 400, height: 400, alt: title }],
+      }),
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      creator: "@ravelapp",
+      site: "@ravelapp",
+      ...(user.avatar_url && { images: [user.avatar_url] }),
     },
     alternates: { canonical: canonicalUrl },
   };
@@ -96,9 +120,33 @@ export default async function UserProfilePage({
   if (!user) notFound();
 
   const hasManyCollections = user.collections.length >= 3;
+  const profileUrl = `https://ravel.life/@${user.username}`;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    mainEntity: {
+      "@type": "Person",
+      name: user.display_name,
+      alternateName: `@${user.username}`,
+      url: profileUrl,
+      ...(user.bio && { description: user.bio }),
+      ...(user.avatar_url && { image: user.avatar_url }),
+      interactionStatistic: {
+        "@type": "InteractionCounter",
+        interactionType: "https://schema.org/CreateAction",
+        userInteractionCount: user.collections.length,
+      },
+    },
+  };
 
   return (
-    <div className="min-h-screen bg-white">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="min-h-screen bg-white">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-2xl backdrop-saturate-[1.8]">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
@@ -423,5 +471,6 @@ export default async function UserProfilePage({
         </div>
       </footer>
     </div>
+    </>
   );
 }

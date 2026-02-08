@@ -6,10 +6,26 @@ export const metadata: Metadata = {
   title: "Support",
   description:
     "Get help with Ravel. Find answers to common questions or contact our support team.",
+  alternates: { canonical: "https://ravel.life/support" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
   openGraph: {
     title: "Support | Ravel",
     description:
       "Get help with Ravel. Find answers to common questions or contact our support team.",
+    url: "https://ravel.life/support",
+    siteName: "Ravel",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Support | Ravel",
+    description:
+      "Get help with Ravel. Find answers to common questions or contact our support team.",
+    site: "@ravelapp",
   },
 };
 
