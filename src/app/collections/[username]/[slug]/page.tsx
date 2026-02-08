@@ -30,16 +30,16 @@ interface CollectionData {
   total_items: number;
 }
 
-async function getCollection(username: string, slug: string): Promise<CollectionData | null> {
+async function getCollection(
+  username: string,
+  slug: string
+): Promise<CollectionData | null> {
   try {
-    const res = await fetch(`${API_BASE}/collections/public/${username}/${slug}`, {
-      next: { revalidate: 60 },
-    });
-    
-    if (!res.ok) {
-      return null;
-    }
-    
+    const res = await fetch(
+      `${API_BASE}/collections/public/${username}/${slug}`,
+      { next: { revalidate: 60 } }
+    );
+    if (!res.ok) return null;
     return res.json();
   } catch {
     return null;
@@ -53,20 +53,20 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { username, slug } = await params;
   const data = await getCollection(username, slug);
-  
+
   if (!data) {
     return {
       title: "Collection Not Found - Ravel",
-      description: "This collection doesn't exist or is no longer public.",
+      description: "This collection doesn\u2019t exist or is no longer public.",
     };
   }
 
   const { collection } = data;
   const title = `${collection.name} by ${collection.owner_name}`;
   const fullTitle = `${title} | Ravel`;
-  const description = collection.description 
-    || `A curated collection of ${collection.item_count} items by ${collection.owner_name} on Ravel`;
-  
+  const description =
+    collection.description ||
+    `A curated collection of ${collection.item_count} items by ${collection.owner_name} on Ravel`;
   const canonicalUrl = `https://ravel.life/collections/${username}/${slug}`;
 
   return {
@@ -77,54 +77,26 @@ export async function generateMetadata({
     creator: collection.owner_name,
     publisher: "Ravel",
     keywords: [
-      "fashion collection",
-      "style",
-      "curated fashion",
-      collection.name,
-      collection.owner_name,
-      "outfit ideas",
-      "wardrobe",
+      "fashion collection", "style", "curated fashion",
+      collection.name, collection.owner_name, "outfit ideas", "wardrobe",
     ],
     robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        "max-video-preview": -1,
-        "max-image-preview": "large",
-        "max-snippet": -1,
-      },
+      index: true, follow: true,
+      googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large", "max-snippet": -1 },
     },
-    alternates: {
-      canonical: canonicalUrl,
-    },
-    openGraph: {
-      title,
-      description,
-      url: canonicalUrl,
-      siteName: "Ravel",
-      locale: "en_US",
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      creator: "@ravelapp",
-      site: "@ravelapp",
-    },
+    alternates: { canonical: canonicalUrl },
+    openGraph: { title, description, url: canonicalUrl, siteName: "Ravel", locale: "en_US", type: "website" },
+    twitter: { card: "summary_large_image", title, description, creator: "@ravelapp", site: "@ravelapp" },
   };
 }
 
 function formatPrice(cents: number, currency: string): string {
-  const amount = cents / 100;
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: currency || "USD",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(amount);
+  }).format(cents / 100);
 }
 
 export default async function CollectionPage({
@@ -134,13 +106,13 @@ export default async function CollectionPage({
 }) {
   const { username, slug } = await params;
   const data = await getCollection(username, slug);
-  
-  if (!data) {
-    notFound();
-  }
+  if (!data) notFound();
 
   const { collection, items } = data;
   const shareUrl = `https://ravel.life/collections/${username}/${slug}`;
+  const coverSrc = collection.cover_image_url || items[0]?.product_image_url;
+  const featuredItems = items.slice(0, 2);
+  const restItems = items.slice(2);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -148,14 +120,10 @@ export default async function CollectionPage({
     name: collection.name,
     description: collection.description || `A curated collection by ${collection.owner_name}`,
     url: shareUrl,
-    author: {
-      "@type": "Person",
-      name: collection.owner_name,
-      image: collection.owner_avatar_url,
-    },
+    author: { "@type": "Person", name: collection.owner_name, image: collection.owner_avatar_url },
     numberOfItems: collection.item_count,
     dateCreated: collection.created_at,
-    image: collection.cover_image_url || items[0]?.product_image_url,
+    image: coverSrc,
     mainEntity: {
       "@type": "ItemList",
       numberOfItems: items.length,
@@ -167,11 +135,7 @@ export default async function CollectionPage({
           name: item.product_name,
           image: item.product_image_url,
           brand: item.product_brand ? { "@type": "Brand", name: item.product_brand } : undefined,
-          offers: {
-            "@type": "Offer",
-            price: item.product_price_cents / 100,
-            priceCurrency: item.product_currency || "USD",
-          },
+          offers: { "@type": "Offer", price: item.product_price_cents / 100, priceCurrency: item.product_currency || "USD" },
         },
       })),
     },
@@ -184,193 +148,240 @@ export default async function CollectionPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="min-h-screen bg-[#fafafa]">
+      <div className="min-h-screen bg-white">
         {/* Navigation */}
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-2xl border-b border-neutral-100">
-          <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2.5">
-              <Image
-                src="/core.png"
-                alt="Ravel"
-                width={32}
-                height={32}
-                className="rounded-xl"
-              />
-              <span className="font-semibold text-xl tracking-tight text-neutral-900">
-                Ravel
-              </span>
-            </Link>
-            
-            <div className="flex items-center gap-3">
-              <ShareButton
-                title={collection.name}
-                url={shareUrl}
-                className="hidden sm:flex items-center gap-2 h-10 px-4 rounded-full border border-neutral-200 text-neutral-700 text-sm font-medium transition-colors hover:bg-neutral-50"
-              />
-              
-              <a
-                href="https://apps.apple.com/app/ravel"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex h-10 items-center justify-center px-5 rounded-full bg-neutral-900 text-white text-sm font-medium transition-all hover:scale-[1.02]"
-              >
-                Get the App
-              </a>
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-2xl backdrop-saturate-[1.8]">
+          <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
+            <div className="h-16 flex items-center justify-between">
+              <Link href="/" className="flex items-center gap-3 group">
+                <Image src="/core.png" alt="Ravel" width={28} height={28} className="rounded-[8px] transition-transform duration-300 group-hover:scale-105" />
+                <span className="text-[15px] font-semibold tracking-[-0.01em]">Ravel</span>
+              </Link>
+              <div className="flex items-center gap-3">
+                <ShareButton
+                  title={collection.name}
+                  url={shareUrl}
+                  className="hidden sm:flex items-center gap-2 h-9 px-4 rounded-full border border-black/[0.06] text-[#0a0a0a] text-[13px] font-medium transition-all duration-300 hover:border-black/[0.12] hover:bg-[#fafafa]"
+                />
+                <a
+                  href="https://apps.apple.com/app/ravel"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[13px] font-medium px-5 py-2 rounded-full bg-[#0a0a0a] text-white hover:bg-[#1a1a1a] transition-all duration-300 hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+                >
+                  Get the app
+                </a>
+              </div>
             </div>
           </div>
+          <div className="h-px bg-black/[0.04]" />
         </nav>
 
-        {/* Hero Header */}
         <main className="pt-16">
-          <section className="relative">
-            <div className="absolute inset-0 bg-gradient-to-b from-neutral-100 to-transparent h-80" />
-            
-            <div className="relative px-6 py-16">
-              <div className="max-w-7xl mx-auto">
-                <div className="flex flex-col lg:flex-row items-start gap-8">
-                  {/* Collection Cover */}
-                  <div className="w-full lg:w-auto flex-shrink-0">
-                    {collection.cover_image_url || items.length > 0 ? (
-                      <div className="relative w-full lg:w-72 aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-neutral-300/50 ring-1 ring-black/5">
-                        <Image
-                          src={collection.cover_image_url || items[0]?.product_image_url || ""}
-                          alt={collection.name}
-                          fill
-                          className="object-cover"
-                          priority
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-                      </div>
-                    ) : (
-                      <div className="w-full lg:w-72 aspect-square rounded-3xl bg-neutral-200 flex items-center justify-center shadow-2xl">
-                        <svg className="w-20 h-20 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 6.878V6a2.25 2.25 0 012.25-2.25h7.5A2.25 2.25 0 0118 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 004.5 9v.878m13.5-3A2.25 2.25 0 0119.5 9v.878m0 0a2.246 2.246 0 00-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0121 12v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6c0-.98.626-1.813 1.5-2.122" />
-                        </svg>
-                      </div>
-                    )}
+          {/* ═══════════════════════════════════════════ */}
+          {/*  IMMERSIVE COVER BANNER                    */}
+          {/* ═══════════════════════════════════════════ */}
+          {coverSrc && (
+            <section className="relative w-full h-[42vh] min-h-[320px] max-h-[520px] overflow-hidden">
+              <Image
+                src={coverSrc}
+                alt=""
+                fill
+                className="object-cover"
+                priority
+              />
+              {/* Gradient fade to white */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-white/20 to-white" />
+              {/* Subtle vignette */}
+              <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white/40" />
+            </section>
+          )}
+
+          {/* ═══════════════════════════════════════════ */}
+          {/*  EDITORIAL COLLECTION INFO                 */}
+          {/* ═══════════════════════════════════════════ */}
+          <section
+            className={`relative px-6 pb-12 ${coverSrc ? "-mt-20" : "pt-12"}`}
+          >
+            <div className="max-w-[1100px] mx-auto">
+              {/* Curated by */}
+              <Link
+                href={`/@${username}`}
+                className="inline-flex items-center gap-3 mb-5 group"
+              >
+                {collection.owner_avatar_url ? (
+                  <Image
+                    src={collection.owner_avatar_url}
+                    alt={collection.owner_name}
+                    width={36}
+                    height={36}
+                    className="rounded-full ring-2 ring-white shadow-sm"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-[#f0ebe4] flex items-center justify-center ring-2 ring-white">
+                    <span className="text-[14px] font-semibold text-[#0a0a0a]">
+                      {collection.owner_name.charAt(0).toUpperCase()}
+                    </span>
                   </div>
-
-                  {/* Collection Info */}
-                  <div className="flex-1 pt-2">
-                    <Link 
-                      href={`/@${username}`}
-                      className="inline-flex items-center gap-2.5 mb-4 group"
-                    >
-                      {collection.owner_avatar_url ? (
-                        <Image
-                          src={collection.owner_avatar_url}
-                          alt={collection.owner_name}
-                          width={36}
-                          height={36}
-                          className="rounded-full ring-2 ring-white"
-                        />
-                      ) : (
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-neutral-200 to-neutral-300 flex items-center justify-center ring-2 ring-white">
-                          <span className="text-sm font-semibold text-neutral-600">
-                            {collection.owner_name.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                      )}
-                      <span className="text-neutral-600 font-medium group-hover:text-neutral-900 transition-colors">
-                        {collection.owner_name}
-                      </span>
-                    </Link>
-
-                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 mb-4 tracking-tight">
-                      {collection.name}
-                    </h1>
-                    
-                    {collection.description && (
-                      <p className="text-lg text-neutral-600 mb-6 max-w-2xl leading-relaxed">
-                        {collection.description}
-                      </p>
-                    )}
-
-                    <div className="flex items-center gap-6">
-                      <div className="flex items-center gap-2">
-                        <svg className="w-5 h-5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-                        </svg>
-                        <span className="text-neutral-900 font-semibold">
-                          {collection.item_count}
-                        </span>
-                        <span className="text-neutral-500">items</span>
-                      </div>
-                    </div>
-
-                    {/* Mobile Actions */}
-                    <div className="flex items-center gap-3 mt-8 lg:hidden">
-                      <a
-                        href={`ravel://collection/${collection.id}`}
-                        className="flex-1 flex items-center justify-center gap-2 h-12 rounded-full bg-neutral-900 text-white font-medium"
-                      >
-                        Open in App
-                      </a>
-                      <ShareButton
-                        title={collection.name}
-                        url={shareUrl}
-                        className="w-12 h-12 rounded-full border border-neutral-200 flex items-center justify-center text-neutral-700"
-                        iconOnly
-                      />
-                    </div>
-                  </div>
+                )}
+                <div>
+                  <p className="text-[11px] text-[#b0b0b0] font-semibold tracking-[0.12em] uppercase leading-none mb-1">
+                    Curated by
+                  </p>
+                  <p className="text-[15px] text-[#0a0a0a] font-medium group-hover:text-[#737373] transition-colors duration-300 leading-none">
+                    {collection.owner_name}
+                  </p>
                 </div>
+              </Link>
+
+              {/* Collection title — massive editorial serif */}
+              <h1 className="text-[clamp(40px,8vw,80px)] leading-[0.93] tracking-[-0.04em] mb-5">
+                <span className="display-font italic font-normal">
+                  {collection.name}
+                </span>
+              </h1>
+
+              {collection.description && (
+                <p className="text-[18px] leading-[1.6] text-[#737373] max-w-[600px] mb-6">
+                  {collection.description}
+                </p>
+              )}
+
+              {/* Stats + mobile actions */}
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#fafafa] border border-black/[0.04]">
+                  <span className="text-[14px] font-semibold text-[#0a0a0a]">
+                    {collection.item_count}
+                  </span>
+                  <span className="text-[14px] text-[#b0b0b0]">pieces</span>
+                </div>
+                <div className="sm:hidden">
+                  <ShareButton
+                    title={collection.name}
+                    url={shareUrl}
+                    className="flex items-center justify-center w-10 h-10 rounded-full border border-black/[0.06] text-[#0a0a0a] hover:bg-[#fafafa] transition-colors"
+                    iconOnly
+                  />
+                </div>
+                <a
+                  href={`ravel://collection/${collection.id}`}
+                  className="sm:hidden inline-flex items-center justify-center h-10 px-5 rounded-full bg-[#0a0a0a] text-white text-[14px] font-medium"
+                >
+                  Open in App
+                </a>
               </div>
             </div>
           </section>
 
-          {/* Items Grid */}
-          <section className="px-6 py-8 pb-16">
-            <div className="max-w-7xl mx-auto">
-              {items.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
-                  {items.map((item) => (
-                    <article
-                      key={item.id}
-                      className="group bg-white rounded-2xl overflow-hidden border border-neutral-100 transition-all hover:shadow-xl hover:shadow-neutral-200/50 hover:-translate-y-1"
-                    >
-                      <div className="aspect-square bg-neutral-50 relative overflow-hidden">
-                        {item.product_image_url ? (
-                          <Image
-                            src={item.product_image_url}
-                            alt={item.product_name}
-                            fill
-                            className="object-cover transition-transform duration-500 group-hover:scale-110"
-                            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <svg className="w-12 h-12 text-neutral-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                            </svg>
-                          </div>
-                        )}
-                      </div>
+          {/* ═══════════════════════════════════════════ */}
+          {/*  ITEMS                                     */}
+          {/* ═══════════════════════════════════════════ */}
+          <section className="px-6 pb-20">
+            <div className="max-w-[1100px] mx-auto">
+              {/* Section divider */}
+              <div className="flex items-center gap-5 mb-8">
+                <p className="text-[12px] text-[#b0b0b0] font-semibold tracking-[0.15em] uppercase shrink-0">
+                  Pieces
+                </p>
+                <div className="flex-1 h-px bg-black/[0.04]" />
+              </div>
 
-                      <div className="p-3 sm:p-4">
-                        {item.product_brand && (
-                          <p className="text-xs text-neutral-500 mb-1 truncate font-medium uppercase tracking-wide">
-                            {item.product_brand}
-                          </p>
-                        )}
-                        <h3 className="text-sm font-medium text-neutral-900 truncate mb-1.5">
-                          {item.product_name}
-                        </h3>
-                        <p className="text-sm font-semibold text-neutral-700">
-                          {formatPrice(item.product_price_cents, item.product_currency)}
-                        </p>
-                      </div>
-                    </article>
-                  ))}
-                </div>
+              {items.length > 0 ? (
+                <>
+                  {/* Featured items — larger, portrait aspect */}
+                  {featuredItems.length > 0 && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+                      {featuredItems.map((item) => (
+                        <article
+                          key={item.id}
+                          className="group bg-white rounded-[24px] overflow-hidden border border-black/[0.04] transition-all duration-500 hover:border-black/[0.08] hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(0,0,0,0.07)]"
+                        >
+                          <div className="aspect-[3/4] bg-[#fafafa] relative overflow-hidden">
+                            {item.product_image_url ? (
+                              <Image
+                                src={item.product_image_url}
+                                alt={item.product_name}
+                                fill
+                                className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                                sizes="(max-width: 640px) 100vw, 50vw"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <svg className="w-14 h-14 text-[#e0e0e0]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                          <div className="p-5">
+                            {item.product_brand && (
+                              <p className="text-[11px] text-[#b0b0b0] mb-1.5 font-semibold uppercase tracking-[0.08em]">
+                                {item.product_brand}
+                              </p>
+                            )}
+                            <h3 className="text-[16px] font-medium text-[#0a0a0a] mb-2 line-clamp-2">
+                              {item.product_name}
+                            </h3>
+                            <p className="text-[15px] font-semibold text-[#404040]">
+                              {formatPrice(item.product_price_cents, item.product_currency)}
+                            </p>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Rest of items — compact grid */}
+                  {restItems.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+                      {restItems.map((item) => (
+                        <article
+                          key={item.id}
+                          className="group bg-white rounded-[20px] overflow-hidden border border-black/[0.04] transition-all duration-500 hover:border-black/[0.08] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)]"
+                        >
+                          <div className="aspect-square bg-[#fafafa] relative overflow-hidden">
+                            {item.product_image_url ? (
+                              <Image
+                                src={item.product_image_url}
+                                alt={item.product_name}
+                                fill
+                                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <svg className="w-10 h-10 text-[#e0e0e0]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                          <div className="p-3.5">
+                            {item.product_brand && (
+                              <p className="text-[11px] text-[#b0b0b0] mb-1 truncate font-semibold uppercase tracking-[0.05em]">
+                                {item.product_brand}
+                              </p>
+                            )}
+                            <h3 className="text-[13px] font-medium text-[#0a0a0a] truncate mb-1.5">
+                              {item.product_name}
+                            </h3>
+                            <p className="text-[13px] font-semibold text-[#404040]">
+                              {formatPrice(item.product_price_cents, item.product_currency)}
+                            </p>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  )}
+                </>
               ) : (
-                <div className="text-center py-20">
-                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-neutral-100 flex items-center justify-center">
-                    <svg className="w-10 h-10 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <div className="text-center py-24">
+                  <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-[#fafafa] border border-black/[0.04] flex items-center justify-center">
+                    <svg className="w-9 h-9 text-[#b0b0b0]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
                     </svg>
                   </div>
-                  <p className="text-lg text-neutral-600">
+                  <p className="text-[17px] text-[#737373]">
                     This collection is empty
                   </p>
                 </div>
@@ -378,70 +389,42 @@ export default async function CollectionPage({
             </div>
           </section>
 
-          {/* App Promo */}
-          <section className="px-6 py-20 bg-neutral-900">
-            <div className="max-w-2xl mx-auto text-center">
-              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-white flex items-center justify-center shadow-xl">
-                <Image
-                  src="/core.png"
-                  alt="Ravel"
-                  width={40}
-                  height={40}
-                  className="rounded-lg"
-                />
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-                Create your own collections
-              </h2>
-              <p className="text-lg text-neutral-400 mb-8 max-w-md mx-auto">
-                Curate your style, discover new pieces, and share with friends on Ravel.
+          {/* ═══════════════════════════════════════════ */}
+          {/*  APP PROMO — editorial statement           */}
+          {/* ═══════════════════════════════════════════ */}
+          <section className="px-6 py-28 bg-[#fafafa] border-t border-black/[0.04]">
+            <div className="max-w-[640px] mx-auto text-center">
+              <p className="text-[clamp(28px,4.5vw,44px)] leading-[1.2] tracking-[-0.025em] mb-10">
+                <span className="display-font italic">Fashion is personal.</span>{" "}
+                <span className="text-[#b0b0b0]">
+                  Ravel gives your taste a home — organized, beautiful, and
+                  entirely yours.
+                </span>
               </p>
               <a
                 href="https://apps.apple.com/app/ravel"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 h-14 px-8 rounded-full bg-white text-neutral-900 font-semibold transition-all hover:scale-[1.02] hover:shadow-xl"
+                className="inline-flex items-center gap-2.5 h-[56px] px-9 rounded-full bg-[#0a0a0a] text-white text-[16px] font-medium tracking-[-0.01em] transition-all duration-300 hover:bg-[#1a1a1a] hover:shadow-[0_12px_40px_rgba(0,0,0,0.15)] hover:-translate-y-0.5 active:translate-y-0"
               >
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                </svg>
-                Download Ravel Free
+                Get Ravel for iPhone
+                <span className="text-white/50">&#8594;</span>
               </a>
             </div>
           </section>
         </main>
 
         {/* Footer */}
-        <footer className="py-10 px-6 border-t border-neutral-100 bg-white">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-            <Link href="/" className="flex items-center gap-2.5">
-              <Image
-                src="/core.png"
-                alt="Ravel"
-                width={24}
-                height={24}
-                className="rounded-lg"
-              />
-              <span className="text-neutral-500 font-medium">
-                ravel.life
-              </span>
-            </Link>
-            
-            <div className="flex items-center gap-8 text-sm text-neutral-500">
-              <Link href="/privacy" className="hover:text-neutral-900 transition-colors">
-                Privacy
-              </Link>
-              <Link href="/terms" className="hover:text-neutral-900 transition-colors">
-                Terms
-              </Link>
-              <a 
-                href="https://twitter.com/ravelapp" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hover:text-neutral-900 transition-colors"
-              >
-                Twitter
-              </a>
+        <footer className="border-t border-black/[0.04] py-8 px-6">
+          <div className="max-w-[1200px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-5">
+            <div className="flex items-center gap-2.5">
+              <Image src="/core.png" alt="Ravel" width={18} height={18} className="rounded-[5px] opacity-40" />
+              <span className="text-[13px] text-[#b0b0b0]">&copy; 2026 Ravel</span>
+            </div>
+            <div className="flex items-center gap-8 text-[13px] text-[#b0b0b0]">
+              <Link href="/privacy" className="hover:text-[#0a0a0a] transition-colors duration-300">Privacy</Link>
+              <Link href="/terms" className="hover:text-[#0a0a0a] transition-colors duration-300">Terms</Link>
+              <Link href="/support" className="hover:text-[#0a0a0a] transition-colors duration-300">Support</Link>
             </div>
           </div>
         </footer>

@@ -1,10 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const instrumentSerif = Instrument_Serif({
+  weight: "400",
+  style: ["normal", "italic"],
+  subsets: ["latin"],
+  variable: "--font-instrument",
   display: "swap",
 });
 
@@ -20,7 +28,8 @@ export const metadata: Metadata = {
     default: "Ravel — Curate Your Style",
     template: "%s | Ravel",
   },
-  description: "Save, organize, and share your favorite fashion finds. Build collections of items you love and discover new styles.",
+  description:
+    "Save, organize, and share your favorite fashion finds. Build collections of items you love and discover new styles.",
   applicationName: "Ravel",
   keywords: [
     "fashion",
@@ -53,7 +62,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Ravel — Curate Your Style",
-    description: "Save, organize, and share your favorite fashion finds. Build collections of items you love.",
+    description:
+      "Save, organize, and share your favorite fashion finds. Build collections of items you love.",
     url: "https://ravel.life",
     siteName: "Ravel",
     images: [
@@ -100,7 +110,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="light" style={{ colorScheme: "light" }}>
-      <body className={`${inter.variable} font-sans antialiased bg-white text-[#1d1d1f]`}>
+      <body
+        className={`${inter.variable} ${instrumentSerif.variable} font-sans antialiased bg-white text-[#0a0a0a]`}
+      >
         {children}
       </body>
     </html>
