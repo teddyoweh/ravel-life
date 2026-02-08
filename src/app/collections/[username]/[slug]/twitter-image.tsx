@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { API_BASE } from "@/lib/api";
+import { API_BASE, sanitizeImageUrl } from "@/lib/api";
 
 export const runtime = "edge";
 export const alt = "Collection Preview";
@@ -71,6 +71,7 @@ export default async function TwitterImage({
 
   const { collection, items } = data;
   const productImages = items
+    .map((item) => ({ ...item, product_image_url: sanitizeImageUrl(item.product_image_url) }))
     .filter((item) => item.product_image_url)
     .slice(0, 4);
   const hasImages = productImages.length > 0;
@@ -119,10 +120,10 @@ export default async function TwitterImage({
               position: "relative",
             }}
           >
-            {collection.owner_avatar_url ? (
+            {sanitizeImageUrl(collection.owner_avatar_url) ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={collection.owner_avatar_url}
+                src={sanitizeImageUrl(collection.owner_avatar_url) || ""}
                 alt=""
                 style={{ width: 24, height: 24, borderRadius: 12 }}
               />
@@ -256,10 +257,10 @@ export default async function TwitterImage({
               CURATED BY
             </span>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              {collection.owner_avatar_url ? (
+              {sanitizeImageUrl(collection.owner_avatar_url) ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={collection.owner_avatar_url}
+                  src={sanitizeImageUrl(collection.owner_avatar_url) || ""}
                   alt=""
                   style={{
                     width: 30,

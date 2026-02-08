@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { API_BASE } from "@/lib/api";
+import { API_BASE, sanitizeImageUrl } from "@/lib/api";
 import { ShareButton } from "@/components/ShareButton";
 
 interface LookItem {
@@ -132,8 +132,14 @@ export default async function LookPage({
   if (!data) notFound();
 
   const shareUrl = `https://ravel.life/look/${username}/${slug}`;
-  const lookImage = data.look_image_with_bg_url || data.look_image_url;
+  const lookImage = sanitizeImageUrl(data.look_image_with_bg_url) || sanitizeImageUrl(data.look_image_url);
   const lookName = data.name || "A Look";
+
+  // Sanitize all item image URLs
+  const sanitizedItems = data.items.map((item) => ({
+    ...item,
+    image_url: sanitizeImageUrl(item.image_url) || "",
+  }));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -147,10 +153,10 @@ export default async function LookPage({
     author: {
       "@type": "Person",
       name: data.owner.name,
-      image: data.owner.avatar_url,
+      image: sanitizeImageUrl(data.owner.avatar_url),
     },
     dateCreated: data.created_at,
-    image: lookImage,
+    image: lookImage || undefined,
   };
 
   return (
@@ -227,9 +233,9 @@ export default async function LookPage({
                 <div className="flex flex-col justify-center lg:py-8">
                   {/* Styled by */}
                   <div className="inline-flex items-center gap-3 mb-6">
-                    {data.owner.avatar_url ? (
+                    {sanitizeImageUrl(data.owner.avatar_url) ? (
                       <Image
-                        src={data.owner.avatar_url}
+                        src={sanitizeImageUrl(data.owner.avatar_url)!}
                         alt={data.owner.name}
                         width={36}
                         height={36}
@@ -325,7 +331,7 @@ export default async function LookPage({
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
-                  {data.items.map((item, index) => (
+                  {sanitizedItems.map((item, index) => (
                     <article
                       key={item.item_id || index}
                       className="group bg-white rounded-[20px] overflow-hidden border border-black/[0.04] transition-all duration-500 hover:border-black/[0.08] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)]"

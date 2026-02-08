@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { API_BASE } from "@/lib/api";
+import { API_BASE, sanitizeImageUrl } from "@/lib/api";
 
 interface PublicCollection {
   id: string;
@@ -88,8 +88,8 @@ export async function generateMetadata({
       url: canonicalUrl,
       siteName: "Ravel",
       type: "profile",
-      ...(user.avatar_url && {
-        images: [{ url: user.avatar_url, width: 400, height: 400, alt: title }],
+      ...(sanitizeImageUrl(user.avatar_url) && {
+        images: [{ url: sanitizeImageUrl(user.avatar_url)!, width: 400, height: 400, alt: title }],
       }),
     },
     twitter: {
@@ -98,7 +98,7 @@ export async function generateMetadata({
       description,
       creator: "@ravelapp",
       site: "@ravelapp",
-      ...(user.avatar_url && { images: [user.avatar_url] }),
+      ...(sanitizeImageUrl(user.avatar_url) && { images: [sanitizeImageUrl(user.avatar_url)!] }),
     },
     alternates: { canonical: canonicalUrl },
   };
@@ -116,8 +116,18 @@ export default async function UserProfilePage({
       ? rawUsername.slice(1)
       : rawUsername;
 
-  const user = await getUserProfile(username);
-  if (!user) notFound();
+  const rawUser = await getUserProfile(username);
+  if (!rawUser) notFound();
+
+  // Sanitize all image URLs (handles s3:// protocol)
+  const user = {
+    ...rawUser,
+    avatar_url: sanitizeImageUrl(rawUser.avatar_url),
+    collections: rawUser.collections.map((c) => ({
+      ...c,
+      cover_image_url: sanitizeImageUrl(c.cover_image_url),
+    })),
+  };
 
   const hasManyCollections = user.collections.length >= 3;
   const profileUrl = `https://ravel.life/@${user.username}`;
@@ -131,7 +141,7 @@ export default async function UserProfilePage({
       alternateName: `@${user.username}`,
       url: profileUrl,
       ...(user.bio && { description: user.bio }),
-      ...(user.avatar_url && { image: user.avatar_url }),
+      ...(sanitizeImageUrl(user.avatar_url) && { image: sanitizeImageUrl(user.avatar_url) }),
       interactionStatistic: {
         "@type": "InteractionCounter",
         interactionType: "https://schema.org/CreateAction",

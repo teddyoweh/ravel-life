@@ -17,6 +17,14 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "ravel-shop.s3.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "ravel-shop.s3.us-east-1.amazonaws.com",
+      },
+      {
+        protocol: "https",
         hostname: "**.cloudfront.net",
       },
       {

@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { API_BASE } from "@/lib/api";
+import { API_BASE, sanitizeImageUrl } from "@/lib/api";
 import { ShareButton } from "@/components/ShareButton";
 
 interface CollectionItem {
@@ -110,9 +110,14 @@ export default async function CollectionPage({
 
   const { collection, items } = data;
   const shareUrl = `https://ravel.life/collections/${username}/${slug}`;
-  const coverSrc = collection.cover_image_url || items[0]?.product_image_url;
-  const featuredItems = items.slice(0, 2);
-  const restItems = items.slice(2);
+  const coverSrc = sanitizeImageUrl(collection.cover_image_url) || sanitizeImageUrl(items[0]?.product_image_url);
+  // Sanitize all item image URLs to handle s3:// protocol
+  const sanitizedItems = items.map((item) => ({
+    ...item,
+    product_image_url: sanitizeImageUrl(item.product_image_url),
+  }));
+  const featuredItems = sanitizedItems.slice(0, 2);
+  const restItems = sanitizedItems.slice(2);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -120,7 +125,7 @@ export default async function CollectionPage({
     name: collection.name,
     description: collection.description || `A curated collection by ${collection.owner_name}`,
     url: shareUrl,
-    author: { "@type": "Person", name: collection.owner_name, image: collection.owner_avatar_url },
+    author: { "@type": "Person", name: collection.owner_name, image: sanitizeImageUrl(collection.owner_avatar_url) },
     numberOfItems: collection.item_count,
     dateCreated: collection.created_at,
     image: coverSrc,
@@ -209,9 +214,9 @@ export default async function CollectionPage({
                 href={`/@${username}`}
                 className="inline-flex items-center gap-3 mb-5 group"
               >
-                {collection.owner_avatar_url ? (
+                {sanitizeImageUrl(collection.owner_avatar_url) ? (
                   <Image
-                    src={collection.owner_avatar_url}
+                    src={sanitizeImageUrl(collection.owner_avatar_url)!}
                     alt={collection.owner_name}
                     width={36}
                     height={36}

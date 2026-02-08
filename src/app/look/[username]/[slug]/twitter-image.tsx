@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { API_BASE } from "@/lib/api";
+import { API_BASE, sanitizeImageUrl } from "@/lib/api";
 
 export const runtime = "edge";
 export const alt = "Look Preview";
@@ -70,7 +70,7 @@ export default async function TwitterImage({
   }
 
   const lookName = data.name || "A Look";
-  const lookImage = data.look_image_with_bg_url || data.look_image_url;
+  const lookImage = sanitizeImageUrl(data.look_image_with_bg_url) || sanitizeImageUrl(data.look_image_url);
   const hasLookImage = !!lookImage;
 
   const nameLen = lookName.length;
@@ -119,7 +119,7 @@ export default async function TwitterImage({
             {data.owner.avatar_url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={data.owner.avatar_url}
+                src={sanitizeImageUrl(data.owner.avatar_url) || ""}
                 alt=""
                 style={{ width: 24, height: 24, borderRadius: 12 }}
               />
@@ -294,7 +294,7 @@ export default async function TwitterImage({
               {data.owner.avatar_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={data.owner.avatar_url}
+                  src={sanitizeImageUrl(data.owner.avatar_url) || ""}
                   alt=""
                   style={{
                     width: 30,
