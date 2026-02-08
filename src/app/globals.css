@@ -46,16 +46,12 @@
   }
 }
 
-/* ────────────────────────────────────────── */
-/*  Display font                              */
-/* ────────────────────────────────────────── */
+/* ─── Display font ─── */
 .display-font {
   font-family: var(--font-instrument), Georgia, "Times New Roman", serif;
 }
 
-/* ────────────────────────────────────────── */
-/*  Hero background glow                      */
-/* ────────────────────────────────────────── */
+/* ─── Hero background glow ─── */
 .hero-glow {
   background: radial-gradient(
     circle,
@@ -64,119 +60,64 @@
   );
 }
 
-/* ────────────────────────────────────────── */
-/*  Animations                                */
-/* ────────────────────────────────────────── */
+/* ─── Dark section glow ─── */
+.dark-glow {
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.04) 0%,
+    transparent 65%
+  );
+}
 
-/* Floating cards */
+/* ─── Skeleton shimmer ─── */
+.skel {
+  border-radius: 9999px;
+}
+
+/* ─── Animations ─── */
+
 @keyframes float-1 {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-2deg);
-  }
-  50% {
-    transform: translateY(-24px) rotate(2deg);
-  }
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-20px) rotate(2deg); }
 }
-
 @keyframes float-2 {
-  0%,
-  100% {
-    transform: translateY(0) rotate(3deg);
-  }
-  50% {
-    transform: translateY(-18px) rotate(-1deg);
-  }
+  0%, 100% { transform: translateY(0) rotate(3deg); }
+  50% { transform: translateY(-16px) rotate(-1deg); }
 }
-
 @keyframes float-3 {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-1deg);
-  }
-  50% {
-    transform: translateY(-30px) rotate(3deg);
-  }
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-26px) rotate(3deg); }
 }
-
 @keyframes float-4 {
-  0%,
-  100% {
-    transform: translateY(0) rotate(2deg);
-  }
-  50% {
-    transform: translateY(-22px) rotate(-2deg);
-  }
+  0%, 100% { transform: translateY(0) rotate(2deg); }
+  50% { transform: translateY(-18px) rotate(-2deg); }
 }
 
-@keyframes float-5 {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-3deg);
-  }
-  50% {
-    transform: translateY(-16px) rotate(1deg);
-  }
-}
-
-/* Hero glow drift */
 @keyframes glow-drift {
-  0%,
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0.4;
-  }
-  33% {
-    transform: translate(-45%, -55%) scale(1.08);
-    opacity: 0.55;
-  }
-  66% {
-    transform: translate(-55%, -45%) scale(0.95);
-    opacity: 0.45;
-  }
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+  33% { transform: translate(-45%, -55%) scale(1.08); opacity: 0.55; }
+  66% { transform: translate(-55%, -45%) scale(0.95); opacity: 0.45; }
 }
 
-/* Marquee scroll */
 @keyframes marquee {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
-/* Entrance fade up */
 @keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Utility classes */
-.animate-float-1 {
-  animation: float-1 6s ease-in-out infinite;
+@keyframes subtle-pulse {
+  0%, 100% { transform: translateX(-50%) scale(1); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+  50% { transform: translateX(-50%) scale(1.04); box-shadow: 0 12px 32px rgba(0,0,0,0.25); }
 }
-.animate-float-2 {
-  animation: float-2 8s ease-in-out infinite;
-}
-.animate-float-3 {
-  animation: float-3 7s ease-in-out infinite;
-}
-.animate-float-4 {
-  animation: float-4 9s ease-in-out infinite;
-}
-.animate-float-5 {
-  animation: float-5 10s ease-in-out infinite;
-}
-.animate-glow {
-  animation: glow-drift 15s ease-in-out infinite;
-}
-.animate-marquee {
-  animation: marquee 45s linear infinite;
-}
+
+.animate-float-1 { animation: float-1 7s ease-in-out infinite; }
+.animate-float-2 { animation: float-2 9s ease-in-out infinite; }
+.animate-float-3 { animation: float-3 8s ease-in-out infinite; }
+.animate-float-4 { animation: float-4 10s ease-in-out infinite; }
+.animate-glow { animation: glow-drift 15s ease-in-out infinite; }
+.animate-marquee { animation: marquee 50s linear infinite; }
+.animate-pulse-subtle { animation: subtle-pulse 3s ease-in-out infinite; }
