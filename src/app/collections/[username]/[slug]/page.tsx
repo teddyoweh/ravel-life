@@ -297,8 +297,9 @@ export default async function CollectionPage({
                   {featuredItems.length > 0 && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                       {featuredItems.map((item) => (
-                        <article
+                        <Link
                           key={item.id}
+                          href={`/product/${item.id}`}
                           className="group bg-white rounded-[24px] overflow-hidden border border-black/[0.04] transition-all duration-500 hover:border-black/[0.08] hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(0,0,0,0.07)]"
                         >
                           <div className="aspect-[3/4] bg-[#fafafa] relative overflow-hidden">
@@ -331,7 +332,7 @@ export default async function CollectionPage({
                               {formatPrice(item.product_price_cents, item.product_currency)}
                             </p>
                           </div>
-                        </article>
+                        </Link>
                       ))}
                     </div>
                   )}
@@ -340,8 +341,9 @@ export default async function CollectionPage({
                   {restItems.length > 0 && (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
                       {restItems.map((item) => (
-                        <article
+                        <Link
                           key={item.id}
+                          href={`/product/${item.id}`}
                           className="group bg-white rounded-[20px] overflow-hidden border border-black/[0.04] transition-all duration-500 hover:border-black/[0.08] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)]"
                         >
                           <div className="aspect-square bg-[#fafafa] relative overflow-hidden">
@@ -374,7 +376,7 @@ export default async function CollectionPage({
                               {formatPrice(item.product_price_cents, item.product_currency)}
                             </p>
                           </div>
-                        </article>
+                        </Link>
                       ))}
                     </div>
                   )}

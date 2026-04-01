@@ -90,6 +90,9 @@ export const metadata: Metadata = {
     title: "Ravel",
   },
   category: "lifestyle",
+  other: {
+    "apple-itunes-app": "app-id=6757165610",
+  },
 };
 
 export default function RootLayout({

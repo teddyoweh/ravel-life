@@ -233,14 +233,22 @@ export default async function UserProfilePage({
               </p>
             )}
 
-            {/* Stats pill */}
-            <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-[#fafafa] border border-black/[0.04]">
-              <span className="text-[14px] font-semibold text-[#0a0a0a]">
-                {user.collections.length}
-              </span>
-              <span className="text-[14px] text-[#b0b0b0]">
-                {user.collections.length === 1 ? "collection" : "collections"}
-              </span>
+            {/* Stats + actions */}
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-[#fafafa] border border-black/[0.04]">
+                <span className="text-[14px] font-semibold text-[#0a0a0a]">
+                  {user.collections.length}
+                </span>
+                <span className="text-[14px] text-[#b0b0b0]">
+                  {user.collections.length === 1 ? "collection" : "collections"}
+                </span>
+              </div>
+              <a
+                href={`ravel://profile/${user.username}`}
+                className="sm:hidden inline-flex items-center justify-center h-10 px-5 rounded-full bg-[#0a0a0a] text-white text-[14px] font-medium transition-all duration-300 hover:bg-[#1a1a1a]"
+              >
+                Open in App
+              </a>
             </div>
           </div>
         </section>
