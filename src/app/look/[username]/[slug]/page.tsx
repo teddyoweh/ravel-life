@@ -332,16 +332,10 @@ export default async function LookPage({
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
                   {sanitizedItems.map((item, index) => {
-                    const CardTag = item.item_id ? Link : "div";
-                    const cardProps = item.item_id
-                      ? { href: `/product/${item.item_id}` }
-                      : {};
-                    return (
-                      <CardTag
-                        key={item.item_id || index}
-                        {...(cardProps as Record<string, string>)}
-                        className="group bg-white rounded-[20px] overflow-hidden border border-black/[0.04] transition-all duration-500 hover:border-black/[0.08] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)]"
-                      >
+                    const cardClassName = "group bg-white rounded-[20px] overflow-hidden border border-black/[0.04] transition-all duration-500 hover:border-black/[0.08] hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)]";
+                    const cardKey = item.item_id || index;
+                    const cardInner = (
+                      <>
                         <div className="aspect-square bg-[#fafafa] relative overflow-hidden">
                           {item.image_url ? (
                             <Image
@@ -384,7 +378,16 @@ export default async function LookPage({
                             </p>
                           )}
                         </div>
-                      </CardTag>
+                      </>
+                    );
+                    return item.item_id ? (
+                      <Link key={cardKey} href={`/product/${item.item_id}`} className={cardClassName}>
+                        {cardInner}
+                      </Link>
+                    ) : (
+                      <div key={cardKey} className={cardClassName}>
+                        {cardInner}
+                      </div>
                     );
                   })}
                 </div>
