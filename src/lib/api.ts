@@ -5,7 +5,7 @@
  */
 
 /// Production API URL - Cloud Run deployment
-const PRODUCTION_URL = "https://ravel-api-152773804593.us-central1.run.app";
+const PRODUCTION_URL = "https://ravel-api-154019513092.us-central1.run.app";
 
 /// Local dev URL - uses Cloudflare tunnel for local development
 const LOCAL_URL = "https://ravel-api.dev.spawnlabs.run";
